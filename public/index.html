@@ -1,320 +1,501 @@
 <!doctype html>
-<html lang="fa" dir="rtl" class="dark" data-theme="dark" data-panel-version="3.4.0">
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-  <title>BotPanel — پنل مدیریت ربات</title>
-  <meta name="robots" content="noindex">
-  <meta name="color-scheme" content="dark light">
-  <meta name="theme-color" content="#020617">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232aabee'%3E%3Cpath d='M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z'/%3E%3C/svg%3E">
-    <script>
-    (function () {
-      try {
-        var themes = ['dark', 'light', 'ocean', 'violet', 'forest', 'sunset'];
-        var t = localStorage.getItem('bp_theme') || 'dark';
-        if (themes.indexOf(t) < 0) t = 'dark';
-        var l = localStorage.getItem('bp_lang') || 'fa';
-        var d = document.documentElement;
-        d.setAttribute('data-theme', t);
-        var isDark = t !== 'light';
-        if (isDark) d.classList.add('dark'); else d.classList.remove('dark');
-        try { d.style.colorScheme = isDark ? 'dark' : 'light'; } catch (e2) {}
-        d.lang = l; d.dir = (l === 'fa') ? 'rtl' : 'ltr';
-      } catch (e) {}
-    })();
-</script>
-  <link rel="stylesheet" href="/panel.css?v=3.4.0">
-  <link rel="stylesheet" href="/studio.css?v=3.4.0">
-  <style>
-    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-    body { touch-action: manipulation; overscroll-behavior-y: contain; }
-
-    @media (max-width: 767px) {
-      input, select, textarea { font-size: 16px !important; }
-    }
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-thumb { background: rgba(100,116,139,.4); border-radius: 8px; }
-    .tabular { font-variant-numeric: tabular-nums; }
-    @keyframes pulseDot { 0%,100% { opacity: 1 } 50% { opacity: .35 } }
-    .live-dot { animation: pulseDot 1.6s ease-in-out infinite; }
-
-    .bp-sec-body { display: grid; grid-template-rows: 1fr; transition: grid-template-rows .28s ease; }
-    .bp-sec-inner { overflow: hidden; min-height: 0; }
-    .bp-sec:not(.open) .bp-sec-body { grid-template-rows: 0fr; }
-    .bp-sec .chev { transition: transform .28s ease; }
-    .bp-sec.open .chev { transform: rotate(180deg); }
-    .bp-sec-inner > div { transition: opacity .25s ease, transform .25s ease; }
-    .bp-sec:not(.open) .bp-sec-inner > div { opacity: 0; transform: translateY(-6px); }
-
-    html, body { overflow-x: clip; }
-    @supports not (overflow: clip) { html, body { overflow-x: hidden; } }
-
-    body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
-    input, textarea, select, [contenteditable="true"] { -webkit-user-select: text; user-select: text; }
-
-    @media (max-width: 1023px) {
-      .grid > * { min-width: 0; }
-      .flex-1 { min-width: 0; }
-      input, select, textarea { min-width: 0; }
-    }
-
-    @media (max-width: 639px) {
-      .bp-utable thead { display: none !important; }
-      .bp-utable, .bp-utable tbody { display: block; width: 100%; }
-      .bp-utable tbody { display: flex; flex-direction: column; gap: 0.625rem; padding: 0.75rem 0.75rem 0.25rem; }
-      .bp-utable tbody tr {
-        display: flex; flex-wrap: wrap; align-items: center; gap: 0.375rem 0.5rem;
-        padding: 0.75rem !important; border: 1px solid #e2e8f0 !important; border-radius: 0.875rem;
-      }
-      .dark .bp-utable tbody tr { border-color: #1e293b !important; }
-      .bp-utable tbody td { display: block; width: auto; border: 0; padding: 0.125rem 0 !important; }
-      .bp-utable tbody td[data-c="user"] { flex: 1 1 100%; }
-      .bp-utable tbody td[data-c="joined"] { display: none !important; }
-      .bp-utable tbody td[data-c="actions"] {
-        flex: 1 1 100%; display: flex; justify-content: flex-end; align-items: center; gap: 0.25rem;
-        margin-top: 0.375rem; padding-top: 0.5rem !important; border-top: 1px dashed #e2e8f0;
-      }
-      .dark .bp-utable tbody td[data-c="actions"] { border-top-color: #1e293b; }
-      .bp-utable tbody td[colspan] { flex: 1 1 100%; text-align: center; }
-
-      .bp-utable tbody td[data-c="user"] .text-sm { max-width: 100% !important; }
-    }
-
-    .bp-noanim, .bp-noanim * { transition: none !important; }
-
-    #dd-panel { position: fixed; z-index: 90; touch-action: pan-y; overflow-y: auto; overscroll-behavior: contain; border-radius: .875rem; border: 1px solid #e2e8f0; background: #fff; box-shadow: 0 12px 32px rgb(2 6 23 / .18); padding: .375rem; -webkit-overflow-scrolling: touch; }
-    .dark #dd-panel { background: #0f172a; border-color: #334155; box-shadow: 0 12px 32px rgb(0 0 0 / .5); }
-    html[data-theme="ocean"] #dd-panel { background: #0e2a47; border-color: #1a3a5e; }
-    html[data-theme="violet"] #dd-panel { background: #231e44; border-color: #322b58; }
-    html[data-theme="forest"] #dd-panel { background: #0e2f21; border-color: #173d2a; }
-    html[data-theme="sunset"] #dd-panel { background: #2a1a11; border-color: #3d2718; }
-    .dd-opt { display: flex; touch-action: manipulation; align-items: center; gap: .5rem; width: 100%; padding: .625rem .75rem; font-size: .875rem; line-height: 1.4; border-radius: .625rem; color: #334155; cursor: pointer; text-align: start; }
-    .dark .dd-opt { color: #e2e8f0; }
-    .dd-opt:hover { background: #f1f5f9; }
-    .dark .dd-opt:hover { background: rgb(148 163 184 / .14); }
-    .dd-opt.sel { font-weight: 700; color: #0284c7; }
-    .dark .dd-opt.sel { color: #38bdf8; }
-    .dd-check { opacity: 0; font-weight: 800; margin-inline-start: auto; }
-    .dd-opt.sel .dd-check { opacity: 1; }
-    .dd-chev { transition: transform .2s ease; }
-    .dd-chev.rot { transform: rotate(180deg); }
-    @keyframes ddIn { from { opacity: 0; transform: translateY(-4px) scale(.98); } to { opacity: 1; transform: none; } }
-    .dd-in { animation: ddIn .16s ease-out; }
-
-    /* ===== Panel themes: dark / light / ocean / violet / forest / sunset ===== */
-    /* Ocean — deep navy surfaces + cyan accent */
-    html[data-theme="ocean"] body {
-      background: linear-gradient(160deg, #0c2743 0%, #081627 100%) fixed !important;
-      background-color: #0a2036 !important;
-    }
-    html[data-theme="ocean"].dark .dark\:bg-slate-900 { background-color: #0e2a47 !important; }
-    html[data-theme="ocean"].dark .dark\:bg-slate-900\/95 { background-color: rgb(14 42 71 / .95) !important; }
-    html[data-theme="ocean"].dark .dark\:bg-slate-950\/85 { background-color: rgb(13 41 70 / .88) !important; }
-    html[data-theme="ocean"].dark .dark\:bg-slate-800 { background-color: #14385e !important; }
-    html[data-theme="ocean"].dark .dark\:bg-slate-800\/30 { background-color: rgb(20 56 94 / .3) !important; }
-    html[data-theme="ocean"].dark .dark\:bg-slate-800\/40 { background-color: rgb(20 56 94 / .4) !important; }
-    html[data-theme="ocean"].dark .dark\:bg-slate-800\/60 { background-color: rgb(20 56 94 / .6) !important; }
-    html[data-theme="ocean"].dark .dark\:hover\:bg-slate-800:hover { background-color: #14385e !important; }
-    html[data-theme="ocean"].dark .dark\:border-slate-800 { border-color: #1a3a5e !important; }
-    html[data-theme="ocean"].dark .dark\:border-slate-700 { border-color: #234b76 !important; }
-    html[data-theme="ocean"].dark .dark\:border-slate-600 { border-color: #2d5d8f !important; }
-    html[data-theme="ocean"].dark .dark\:divide-slate-800 > :not([hidden]) ~ :not([hidden]) { border-color: #1a3a5e !important; }
-    html[data-theme="ocean"].dark .bp-utable tbody tr { border-color: #1a3a5e !important; }
-    html[data-theme="ocean"].dark .bp-utable tbody td[data-c="actions"] { border-top-color: #1a3a5e !important; }
-    /* Ocean accent overrides */
-    html[data-theme="ocean"] .bg-brand-500 { background-color: #06b6d4 !important; }
-    html[data-theme="ocean"] .hover\:bg-brand-600:hover { background-color: #0891b2 !important; }
-    html[data-theme="ocean"] .text-brand-500 { color: #22d3ee !important; }
-    html[data-theme="ocean"] .text-brand-600 { color: #06b6d4 !important; }
-    html[data-theme="ocean"] .hover\:text-brand-500:hover { color: #22d3ee !important; }
-    html[data-theme="ocean"].dark .dark\:text-brand-400 { color: #22d3ee !important; }
-    html[data-theme="ocean"] .bg-brand-500\/10 { background-color: rgb(6 182 212 / .1) !important; }
-    html[data-theme="ocean"] .bg-brand-500\/15 { background-color: rgb(6 182 212 / .15) !important; }
-    html[data-theme="ocean"] .\!border-brand-500 { border-color: #06b6d4 !important; }
-    html[data-theme="ocean"] .\!text-brand-500 { color: #06b6d4 !important; }
-    html[data-theme="ocean"] .focus\:border-brand-500:focus { border-color: #06b6d4 !important; }
-    html[data-theme="ocean"] .focus\:ring-brand-500\/40:focus { --tw-ring-color: rgb(6 182 212 / .4) !important; }
-    html[data-theme="ocean"] .accent-brand-500 { accent-color: #06b6d4 !important; }
-    html[data-theme="ocean"] .shadow-brand-500\/25 { --tw-shadow-color: rgb(6 182 212 / .25) !important; --tw-shadow: var(--tw-shadow-colored) !important; }
-    html[data-theme="ocean"] .shadow-brand-500\/30 { --tw-shadow-color: rgb(6 182 212 / .3) !important; --tw-shadow: var(--tw-shadow-colored) !important; }
-    html[data-theme="ocean"] .from-brand-400 { --tw-gradient-from: #22d3ee !important; --tw-gradient-to: rgb(34 211 238 / 0) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
-    html[data-theme="ocean"] .from-brand-700 { --tw-gradient-from: #0e7490 !important; --tw-gradient-to: rgb(14 116 144 / 0) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
-    html[data-theme="ocean"] .via-brand-500 { --tw-gradient-to: rgb(6 182 212 / 0) !important; --tw-gradient-stops: var(--tw-gradient-from), #06b6d4, var(--tw-gradient-to) !important; }
-
-    /* Violet — deep purple surfaces + violet accent */
-    html[data-theme="violet"] body {
-      background: linear-gradient(160deg, #241e45 0%, #141127 100%) fixed !important;
-      background-color: #1b1740 !important;
-    }
-    html[data-theme="violet"].dark .dark\:bg-slate-900 { background-color: #231e44 !important; }
-    html[data-theme="violet"].dark .dark\:bg-slate-900\/95 { background-color: rgb(35 30 68 / .95) !important; }
-    html[data-theme="violet"].dark .dark\:bg-slate-950\/85 { background-color: rgb(32 27 62 / .88) !important; }
-    html[data-theme="violet"].dark .dark\:bg-slate-800 { background-color: #2e2952 !important; }
-    html[data-theme="violet"].dark .dark\:bg-slate-800\/30 { background-color: rgb(46 41 82 / .3) !important; }
-    html[data-theme="violet"].dark .dark\:bg-slate-800\/40 { background-color: rgb(46 41 82 / .4) !important; }
-    html[data-theme="violet"].dark .dark\:bg-slate-800\/60 { background-color: rgb(46 41 82 / .6) !important; }
-    html[data-theme="violet"].dark .dark\:hover\:bg-slate-800:hover { background-color: #2e2952 !important; }
-    html[data-theme="violet"].dark .dark\:border-slate-800 { border-color: #322b58 !important; }
-    html[data-theme="violet"].dark .dark\:border-slate-700 { border-color: #413869 !important; }
-    html[data-theme="violet"].dark .dark\:border-slate-600 { border-color: #55497f !important; }
-    html[data-theme="violet"].dark .dark\:divide-slate-800 > :not([hidden]) ~ :not([hidden]) { border-color: #322b58 !important; }
-    html[data-theme="violet"].dark .bp-utable tbody tr { border-color: #322b58 !important; }
-    html[data-theme="violet"].dark .bp-utable tbody td[data-c="actions"] { border-top-color: #322b58 !important; }
-    /* Violet accent overrides */
-    html[data-theme="violet"] .bg-brand-500 { background-color: #8b5cf6 !important; }
-    html[data-theme="violet"] .hover\:bg-brand-600:hover { background-color: #7c3aed !important; }
-    html[data-theme="violet"] .text-brand-500 { color: #a78bfa !important; }
-    html[data-theme="violet"] .text-brand-600 { color: #8b5cf6 !important; }
-    html[data-theme="violet"] .hover\:text-brand-500:hover { color: #a78bfa !important; }
-    html[data-theme="violet"].dark .dark\:text-brand-400 { color: #a78bfa !important; }
-    html[data-theme="violet"] .bg-brand-500\/10 { background-color: rgb(139 92 246 / .1) !important; }
-    html[data-theme="violet"] .bg-brand-500\/15 { background-color: rgb(139 92 246 / .15) !important; }
-    html[data-theme="violet"] .\!border-brand-500 { border-color: #8b5cf6 !important; }
-    html[data-theme="violet"] .\!text-brand-500 { color: #8b5cf6 !important; }
-    html[data-theme="violet"] .focus\:border-brand-500:focus { border-color: #8b5cf6 !important; }
-    html[data-theme="violet"] .focus\:ring-brand-500\/40:focus { --tw-ring-color: rgb(139 92 246 / .4) !important; }
-    html[data-theme="violet"] .accent-brand-500 { accent-color: #8b5cf6 !important; }
-    html[data-theme="violet"] .shadow-brand-500\/25 { --tw-shadow-color: rgb(139 92 246 / .25) !important; --tw-shadow: var(--tw-shadow-colored) !important; }
-    html[data-theme="violet"] .shadow-brand-500\/30 { --tw-shadow-color: rgb(139 92 246 / .3) !important; --tw-shadow: var(--tw-shadow-colored) !important; }
-    html[data-theme="violet"] .from-brand-400 { --tw-gradient-from: #a78bfa !important; --tw-gradient-to: rgb(167 139 250 / 0) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
-    html[data-theme="violet"] .from-brand-700 { --tw-gradient-from: #6d28d9 !important; --tw-gradient-to: rgb(109 40 217 / 0) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
-    html[data-theme="violet"] .via-brand-500 { --tw-gradient-to: rgb(139 92 246 / 0) !important; --tw-gradient-stops: var(--tw-gradient-from), #8b5cf6, var(--tw-gradient-to) !important; }
-
-    /* Forest — deep green surfaces + emerald accent */
-    html[data-theme="forest"] body {
-      background: linear-gradient(160deg, #0d2b1f 0%, #071a12 100%) fixed !important;
-      background-color: #0a2318 !important;
-    }
-    html[data-theme="forest"].dark .dark\:bg-slate-900 { background-color: #0e2f21 !important; }
-    html[data-theme="forest"].dark .dark\:bg-slate-900\/95 { background-color: rgb(14 47 33 / .95) !important; }
-    html[data-theme="forest"].dark .dark\:bg-slate-950\/85 { background-color: rgb(12 40 28 / .88) !important; }
-    html[data-theme="forest"].dark .dark\:bg-slate-800 { background-color: #16402c !important; }
-    html[data-theme="forest"].dark .dark\:bg-slate-800\/30 { background-color: rgb(22 64 44 / .3) !important; }
-    html[data-theme="forest"].dark .dark\:bg-slate-800\/40 { background-color: rgb(22 64 44 / .4) !important; }
-    html[data-theme="forest"].dark .dark\:bg-slate-800\/60 { background-color: rgb(22 64 44 / .6) !important; }
-    html[data-theme="forest"].dark .dark\:hover\:bg-slate-800:hover { background-color: #16402c !important; }
-    html[data-theme="forest"].dark .dark\:border-slate-800 { border-color: #173d2a !important; }
-    html[data-theme="forest"].dark .dark\:border-slate-700 { border-color: #1f5138 !important; }
-    html[data-theme="forest"].dark .dark\:border-slate-600 { border-color: #2a6a49 !important; }
-    html[data-theme="forest"].dark .dark\:divide-slate-800 > :not([hidden]) ~ :not([hidden]) { border-color: #173d2a !important; }
-    html[data-theme="forest"].dark .bp-utable tbody tr { border-color: #173d2a !important; }
-    html[data-theme="forest"].dark .bp-utable tbody td[data-c="actions"] { border-top-color: #173d2a !important; }
-    /* Forest accent overrides */
-    html[data-theme="forest"] .bg-brand-500 { background-color: #10b981 !important; }
-    html[data-theme="forest"] .hover\:bg-brand-600:hover { background-color: #059669 !important; }
-    html[data-theme="forest"] .text-brand-500 { color: #34d399 !important; }
-    html[data-theme="forest"] .text-brand-600 { color: #10b981 !important; }
-    html[data-theme="forest"] .hover\:text-brand-500:hover { color: #34d399 !important; }
-    html[data-theme="forest"].dark .dark\:text-brand-400 { color: #34d399 !important; }
-    html[data-theme="forest"] .bg-brand-500\/10 { background-color: rgb(16 185 129 / .1) !important; }
-    html[data-theme="forest"] .bg-brand-500\/15 { background-color: rgb(16 185 129 / .15) !important; }
-    html[data-theme="forest"] .\!border-brand-500 { border-color: #10b981 !important; }
-    html[data-theme="forest"] .\!text-brand-500 { color: #10b981 !important; }
-    html[data-theme="forest"] .focus\:border-brand-500:focus { border-color: #10b981 !important; }
-    html[data-theme="forest"] .focus\:ring-brand-500\/40:focus { --tw-ring-color: rgb(16 185 129 / .4) !important; }
-    html[data-theme="forest"] .accent-brand-500 { accent-color: #10b981 !important; }
-    html[data-theme="forest"] .shadow-brand-500\/25 { --tw-shadow-color: rgb(16 185 129 / .25) !important; --tw-shadow: var(--tw-shadow-colored) !important; }
-    html[data-theme="forest"] .shadow-brand-500\/30 { --tw-shadow-color: rgb(16 185 129 / .3) !important; --tw-shadow: var(--tw-shadow-colored) !important; }
-    html[data-theme="forest"] .from-brand-400 { --tw-gradient-from: #34d399 !important; --tw-gradient-to: rgb(52 211 153 / 0) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
-    html[data-theme="forest"] .from-brand-700 { --tw-gradient-from: #047857 !important; --tw-gradient-to: rgb(4 120 87 / 0) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
-    html[data-theme="forest"] .via-brand-500 { --tw-gradient-to: rgb(16 185 129 / 0) !important; --tw-gradient-stops: var(--tw-gradient-from), #10b981, var(--tw-gradient-to) !important; }
-
-    /* Sunset — deep espresso surfaces + amber accent */
-    html[data-theme="sunset"] body {
-      background: linear-gradient(160deg, #2b1a10 0%, #170e08 100%) fixed !important;
-      background-color: #211309 !important;
-    }
-    html[data-theme="sunset"].dark .dark\:bg-slate-900 { background-color: #2a1a11 !important; }
-    html[data-theme="sunset"].dark .dark\:bg-slate-900\/95 { background-color: rgb(42 26 17 / .95) !important; }
-    html[data-theme="sunset"].dark .dark\:bg-slate-950\/85 { background-color: rgb(38 23 15 / .88) !important; }
-    html[data-theme="sunset"].dark .dark\:bg-slate-800 { background-color: #3a2417 !important; }
-    html[data-theme="sunset"].dark .dark\:bg-slate-800\/30 { background-color: rgb(58 36 23 / .3) !important; }
-    html[data-theme="sunset"].dark .dark\:bg-slate-800\/40 { background-color: rgb(58 36 23 / .4) !important; }
-    html[data-theme="sunset"].dark .dark\:bg-slate-800\/60 { background-color: rgb(58 36 23 / .6) !important; }
-    html[data-theme="sunset"].dark .dark\:hover\:bg-slate-800:hover { background-color: #3a2417 !important; }
-    html[data-theme="sunset"].dark .dark\:border-slate-800 { border-color: #3d2718 !important; }
-    html[data-theme="sunset"].dark .dark\:border-slate-700 { border-color: #54341f !important; }
-    html[data-theme="sunset"].dark .dark\:border-slate-600 { border-color: #6f4527 !important; }
-    html[data-theme="sunset"].dark .dark\:divide-slate-800 > :not([hidden]) ~ :not([hidden]) { border-color: #3d2718 !important; }
-    html[data-theme="sunset"].dark .bp-utable tbody tr { border-color: #3d2718 !important; }
-    html[data-theme="sunset"].dark .bp-utable tbody td[data-c="actions"] { border-top-color: #3d2718 !important; }
-    /* Sunset accent overrides */
-    html[data-theme="sunset"] .bg-brand-500 { background-color: #f59e0b !important; }
-    html[data-theme="sunset"] .hover\:bg-brand-600:hover { background-color: #d97706 !important; }
-    html[data-theme="sunset"] .text-brand-500 { color: #fbbf24 !important; }
-    html[data-theme="sunset"] .text-brand-600 { color: #f59e0b !important; }
-    html[data-theme="sunset"] .hover\:text-brand-500:hover { color: #fbbf24 !important; }
-    html[data-theme="sunset"].dark .dark\:text-brand-400 { color: #fbbf24 !important; }
-    html[data-theme="sunset"] .bg-brand-500\/10 { background-color: rgb(245 158 11 / .1) !important; }
-    html[data-theme="sunset"] .bg-brand-500\/15 { background-color: rgb(245 158 11 / .15) !important; }
-    html[data-theme="sunset"] .\!border-brand-500 { border-color: #f59e0b !important; }
-    html[data-theme="sunset"] .\!text-brand-500 { color: #f59e0b !important; }
-    html[data-theme="sunset"] .focus\:border-brand-500:focus { border-color: #f59e0b !important; }
-    html[data-theme="sunset"] .focus\:ring-brand-500\/40:focus { --tw-ring-color: rgb(245 158 11 / .4) !important; }
-    html[data-theme="sunset"] .accent-brand-500 { accent-color: #f59e0b !important; }
-    html[data-theme="sunset"] .shadow-brand-500\/25 { --tw-shadow-color: rgb(245 158 11 / .25) !important; --tw-shadow: var(--tw-shadow-colored) !important; }
-    html[data-theme="sunset"] .shadow-brand-500\/30 { --tw-shadow-color: rgb(245 158 11 / .3) !important; --tw-shadow: var(--tw-shadow-colored) !important; }
-    html[data-theme="sunset"] .from-brand-400 { --tw-gradient-from: #fbbf24 !important; --tw-gradient-to: rgb(251 191 36 / 0) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
-    html[data-theme="sunset"] .from-brand-700 { --tw-gradient-from: #b45309 !important; --tw-gradient-to: rgb(180 83 9 / 0) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
-    html[data-theme="sunset"] .via-brand-500 { --tw-gradient-to: rgb(245 158 11 / 0) !important; --tw-gradient-stops: var(--tw-gradient-from), #f59e0b, var(--tw-gradient-to) !important; }
-</style>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Eriss — Developer &amp; Cybersecurity Enthusiast</title>
+  <meta name="description" content="Portfolio of Eriss — a developer and cybersecurity enthusiast building modern, secure and functional digital experiences.">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#20242a">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2320242a'/%3E%3Cpath d='M9 8h14v3h-10v3h8v3h-8v4h11v3H9z' fill='%23a78bfa'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/portfolio.css">
 </head>
-<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans antialiased min-h-screen">
-  <div id="app"></div>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
 
-    <div id="modal-wrap" class="hidden fixed inset-0 z-50 items-center justify-center p-4">
-    <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" data-act="modalClose"></div>
-    <div id="modal-box" class="relative w-full max-w-lg rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-2xl animate-fadeIn max-h-[90vh] overflow-y-auto"></div>
-  </div>
+  <!-- One icon sprite for every icon on the page (social rail, mobile panel, footer). -->
+  <svg class="sprite" aria-hidden="true" focusable="false"><defs>
+    <symbol id="i-github" viewBox="0 0 24 24"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.8 10.9.6.1.8-.2.8-.6v-2c-3.1.6-3.8-1.4-3.8-1.4-.5-1.3-1.3-1.6-1.3-1.6-1-.7.1-.7.1-.7 1.1.1 1.7 1.2 1.7 1.2 1 1.7 2.7 1.2 3.4.9.1-.7.4-1.2.7-1.5-2.5-.3-5.1-1.3-5.1-5.6 0-1.2.4-2.2 1.1-3-.1-.3-.5-1.4.1-2.9 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.5.2 2.6.1 2.9.7.8 1.1 1.8 1.1 3 0 4.3-2.6 5.3-5.1 5.6.4.4.8 1.1.8 2.2v3.3c0 .4.2.7.8.6A11.5 11.5 0 0 0 23.5 12C23.5 5.7 18.3.5 12 .5z"/></symbol>
+    <symbol id="i-telegram" viewBox="0 0 24 24"><path d="M21.9 4.3 18.9 19c-.2 1-.8 1.2-1.7.8l-4.6-3.4-2.2 2.1c-.3.3-.5.5-.9.5l.3-4.7L19.5 6c.3-.2-.1-.4-.5-.2L6.8 13.3 2.4 11.9c-1-.3-1-1 .2-1.4l18-7c.8-.3 1.5.2 1.3.8z"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M2 5h20v14H2zm2.7 2L12 12l7.3-5z"/></symbol>
+    <symbol id="i-linkedin" viewBox="0 0 24 24"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zm6 0h3.8v1.7h.06c.53-1 1.83-2.05 3.77-2.05C20.2 8.65 21 10.6 21 13.4V21h-4v-6.6c0-1.6-.6-2.7-2-2.7-1.1 0-1.7.7-2 1.4-.1.3-.1.7-.1 1V21H9z"/></symbol>
+  </defs></svg>
 
-    <div id="toasts" class="fixed z-[60] bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 flex flex-col gap-2 w-[min(92vw,380px)] pointer-events-none"></div>
-    <div id="dd-panel" role="listbox" class="hidden"></div>
+  <div class="glow" id="glow" aria-hidden="true"></div>
 
-    <div id="save-bar" class="hidden fixed inset-x-0 z-40 bottom-[calc(3.75rem+env(safe-area-inset-bottom))] md:bottom-4 pointer-events-none px-3">
-      <div class="max-w-3xl mx-auto">
-        <div class="pointer-events-auto flex items-center gap-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 backdrop-blur shadow-lg shadow-slate-950/10 px-4 py-3">
-          <span id="save-bar-msg" class="flex-1 min-w-0 text-xs font-medium text-slate-500 dark:text-slate-400 leading-5"></span>
-          <button id="save-bar-btn" type="button" data-act="saveAll" class="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 transition disabled:opacity-50 disabled:cursor-not-allowed shrink-0"><i data-lucide="save" class="w-4 h-4"></i><span id="save-bar-btn-label">ذخیره همه تغییرات</span></button>
-        </div>
-      </div>
+  <header class="nav" id="top">
+    <div class="nav__inner">
+      <a class="brand" href="#home" aria-label="Eriss — back to top">
+        <span class="brand__mark" aria-hidden="true">E</span>
+        <span class="brand__name">ERISS</span>
+      </a>
+
+      <nav class="nav__links" aria-label="Primary">
+        <a href="#home">Home</a>
+        <a href="#projects">Projects</a>
+        <a href="#skills">Skills</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </nav>
+
+      <p class="nav__status"><span class="pulse" aria-hidden="true"></span>Open to work</p>
+
+      <button class="nav__toggle" type="button" id="nav-toggle" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open navigation menu">
+        <span class="nav__bar" aria-hidden="true"></span>
+        <span class="nav__bar" aria-hidden="true"></span>
+      </button>
     </div>
 
-  <noscript><div style="padding:2rem;text-align:center">This app requires JavaScript / این پنل به جاوااسکریپت نیاز دارد.</div></noscript>
+    <div class="mobile" id="mobile-menu" hidden>
+      <nav class="mobile__links" aria-label="Mobile">
+        <a href="#home">Home</a>
+        <a href="#projects">Projects</a>
+        <a href="#skills">Skills</a>
+        <a href="#about">About</a>
+        <a href="#journey">Journey</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="mobile__socials">
+        <a class="iconbtn" href="https://github.com/eriss" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#i-github"/></svg></a>
+        <a class="iconbtn" href="https://t.me/eriss" target="_blank" rel="noopener noreferrer" aria-label="Telegram profile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#i-telegram"/></svg></a>
+        <a class="iconbtn" href="#contact" aria-label="Send an email through the contact form"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#i-mail"/></svg></a>
+        <a class="iconbtn" href="https://www.linkedin.com/in/eriss" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#i-linkedin"/></svg></a>
+      </div>
+      <p class="mobile__meta">© 2026 ERISS · Built with curiosity &amp; code.</p>
+    </div>
+  </header>
 
-    <script src="/vendor/telegram-web-app.js"></script>
-    <script src="/vendor/lucide.min.js"></script>
+  <aside class="rail" aria-label="Social links">
+    <a class="rail__link" href="https://github.com/eriss" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#i-github"/></svg></a>
+    <a class="rail__link" href="https://t.me/eriss" target="_blank" rel="noopener noreferrer" aria-label="Telegram profile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#i-telegram"/></svg></a>
+    <a class="rail__link" href="#contact" aria-label="Send an email through the contact form"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#i-mail"/></svg></a>
+    <a class="rail__link" href="https://www.linkedin.com/in/eriss" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#i-linkedin"/></svg></a>
+    <span class="rail__line" aria-hidden="true"></span>
+  </aside>
 
-<script src="/panel.js?v=3.4.0"></script>
-<script src="/studio.js?v=3.4.0"></script>
-<script src="/services.js?v=3.4.0"></script>
-<script>
-(async function () {
-  if (window.Telegram && window.Telegram.WebApp) {
-    try {
-      window.Telegram.WebApp.ready();
-      window.Telegram.WebApp.expand();
-    } catch (e) {}
-    const initData = window.Telegram.WebApp.initData;
-    if (initData && !S.token) {
-      try {
-        const r = await fetch('/api/auth/telegram-admin', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ initData }),
-        });
-        const j = await r.json();
-        if (j && j.ok && j.data && j.data.token) {
-          S.token = j.data.token;
-          sessionStorage.setItem('bp_token', j.data.token);
-          S.mustChangePassword = !!j.data.requiresPasswordChange;
-        }
-      } catch (e) {}
-    }
-  }
-  if (S.token) { try { const session = await api('/auth/session'); S.mustChangePassword = !!session.requiresPasswordChange; if (!S.mustChangePassword) await initV2(); } catch (e) {} }
-  render();
-})();
-</script>
+  <main id="main">
+
+    <!-- ================= hero ================= -->
+    <section class="sec hero" id="home" aria-labelledby="hero-title">
+      <div class="wrap hero__grid">
+        <div class="hero__copy">
+          <p class="eyebrow"><span class="eyebrow__dot" aria-hidden="true"></span>Hello, I'm Eriss</p>
+          <h1 class="hero__title" id="hero-title">Developer &amp; <span class="hl">Cybersecurity</span> Enthusiast</h1>
+          <p class="hero__lede">I build modern digital experiences, explore cybersecurity, and turn ideas into functional software.</p>
+
+          <div class="hero__actions">
+            <a class="btn btn--primary" href="#projects">View Projects <span aria-hidden="true">→</span></a>
+            <a class="btn" href="#contact">Contact Me</a>
+          </div>
+
+          <dl class="hero__meta">
+            <div>
+              <dt class="meta__k">Focus</dt>
+              <dd class="meta__v">Web &amp; security</dd>
+            </div>
+            <div>
+              <dt class="meta__k">Stack</dt>
+              <dd class="meta__v">JS · Python · Linux</dd>
+            </div>
+            <div>
+              <dt class="meta__k">State</dt>
+              <dd class="meta__v">Learning daily</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="hero__visual">
+          <div class="frame">
+            <span class="frame__grid" aria-hidden="true"></span>
+            <svg class="figure" viewBox="0 0 520 640" role="img" aria-label="Anonymous hooded developer figure drawn as a dark technical illustration with a violet rim light">
+              <defs>
+                <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#2b313a"/><stop offset="1" stop-color="#15181d"/>
+                </linearGradient>
+                <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#a78bfa" stop-opacity=".9"/><stop offset="1" stop-color="#8b5cf6" stop-opacity="0"/>
+                </linearGradient>
+                <pattern id="dots" width="9" height="9" patternUnits="userSpaceOnUse">
+                  <circle cx="2.2" cy="2.2" r="1" fill="#a78bfa" fill-opacity=".26"/>
+                </pattern>
+                <clipPath id="silhouette">
+                  <path d="M260 62c-64 0-104 62-104 148 0 62 18 106 52 118h104c34-12 52-56 52-118 0-86-40-148-104-148z"/>
+                  <path d="M92 640c8-168 56-262 116-306h104c60 44 108 138 116 306z"/>
+                </clipPath>
+              </defs>
+
+              <path d="M92 640c8-168 56-262 116-306h104c60 44 108 138 116 306z" fill="url(#body)"/>
+              <path d="M260 62c-64 0-104 62-104 148 0 62 18 106 52 118h104c34-12 52-56 52-118 0-86-40-148-104-148z" fill="url(#body)"/>
+              <ellipse cx="260" cy="214" rx="55" ry="72" fill="#0d0f12"/>
+              <g clip-path="url(#silhouette)" opacity=".9">
+                <rect x="0" y="0" width="520" height="640" fill="url(#dots)"/>
+                <g class="figure__scan" aria-hidden="true">
+                  <rect x="0" y="120" width="520" height="1" fill="#a78bfa" fill-opacity=".16"/>
+                  <rect x="0" y="168" width="520" height="1" fill="#a78bfa" fill-opacity=".12"/>
+                  <rect x="0" y="228" width="520" height="1" fill="#a78bfa" fill-opacity=".16"/>
+                  <rect x="0" y="300" width="520" height="1" fill="#a78bfa" fill-opacity=".1"/>
+                  <rect x="0" y="388" width="520" height="1" fill="#a78bfa" fill-opacity=".12"/>
+                  <rect x="0" y="472" width="520" height="1" fill="#a78bfa" fill-opacity=".1"/>
+                </g>
+              </g>
+              <path d="M156 210c0-86 40-148 104-148" fill="none" stroke="url(#rim)" stroke-width="2.6"/>
+              <path d="M364 206c0-58-26-108-62-132" fill="none" stroke="url(#rim)" stroke-width="1.4" opacity=".55"/>
+              <g class="figure__lock" aria-hidden="true">
+                <rect x="243" y="392" width="34" height="26" fill="none" stroke="#a78bfa" stroke-opacity=".5"/>
+                <path d="M251 392v-7a9 9 0 0 1 18 0v7" fill="none" stroke="#a78bfa" stroke-opacity=".5"/>
+                <circle cx="260" cy="404" r="3" fill="#a78bfa" fill-opacity=".6"/>
+              </g>
+            </svg>
+
+            <span class="frame__tag frame__tag--tl" aria-hidden="true">FIG. 01 / OPERATOR</span>
+            <span class="frame__tag frame__tag--br" aria-hidden="true">SIG 0x1A2F · ONLINE</span>
+            <span class="frame__dot frame__dot--a" aria-hidden="true"></span>
+            <span class="frame__dot frame__dot--b" aria-hidden="true"></span>
+          </div>
+
+          <div class="status">
+            <span class="status__dot" aria-hidden="true"></span>
+            <div class="status__body">
+              <span class="status__k">Currently working on</span>
+              <span class="status__v">Cybersecurity &amp; Software</span>
+            </div>
+            <span class="status__meta" aria-hidden="true">LIVE</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= projects ================= -->
+    <!-- TODO: the Live/Code buttons point at placeholder profiles — swap them for your real repository and demo URLs. -->
+    <section class="sec" id="projects" aria-labelledby="projects-title">
+      <div class="wrap">
+        <div class="sec__head reveal">
+          <h2 class="sec__title" id="projects-title">Projects</h2>
+          <span class="sec__line" aria-hidden="true"></span>
+          <a class="sec__action" href="https://github.com/eriss" target="_blank" rel="noopener noreferrer">View all <span aria-hidden="true">→</span></a>
+        </div>
+
+        <div class="projects">
+          <article class="card reveal">
+            <div class="card__media media--lab">
+              <span class="card__cat">Security</span>
+              <svg viewBox="0 0 320 180" aria-hidden="true" focusable="false">
+                <rect class="m-window" x="24" y="26" width="272" height="128"/>
+                <line class="m-dim" x1="24" y1="50" x2="296" y2="50"/>
+                <circle class="m-accent" cx="38" cy="38" r="3"/>
+                <rect class="m-bar" x="50" y="35" width="28" height="6"/>
+                <rect class="m-bar" x="46" y="70" width="92" height="7"/>
+                <rect class="m-bar" x="46" y="88" width="152" height="7"/>
+                <rect class="m-bar m-bar--accent" x="46" y="106" width="66" height="7"/>
+                <rect class="m-bar" x="46" y="124" width="118" height="7"/>
+                <path class="m-dim" d="M232 66l26 16-26 16z"/>
+              </svg>
+            </div>
+            <div class="card__body">
+              <h3 class="card__title">CyberLab</h3>
+              <p class="card__text">Security-focused experiments, tools and research projects.</p>
+              <ul class="chips">
+                <li>Python</li><li>Linux</li><li>Networking</li>
+              </ul>
+              <div class="card__actions">
+                <a class="linkbtn" href="https://eriss.github.io/cyberlab/" target="_blank" rel="noopener noreferrer">Live <span aria-hidden="true">→</span></a>
+                <a class="linkbtn linkbtn--muted" href="https://github.com/eriss/cyberlab" target="_blank" rel="noopener noreferrer">Code <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="card reveal">
+            <div class="card__media media--panel">
+              <span class="card__cat">Full-stack</span>
+              <svg viewBox="0 0 320 180" aria-hidden="true" focusable="false">
+                <rect class="m-window" x="24" y="26" width="168" height="128"/>
+                <rect class="m-bar" x="40" y="42" width="44" height="6"/>
+                <rect class="m-bar" x="40" y="58" width="30" height="6"/>
+                <rect class="m-bar m-bar--accent" x="40" y="74" width="52" height="6"/>
+                <rect class="m-cell" x="40" y="112" width="20" height="26"/>
+                <rect class="m-cell" x="66" y="104" width="20" height="34"/>
+                <rect class="m-cell m-cell--accent" x="92" y="94" width="20" height="44"/>
+                <rect class="m-cell" x="118" y="112" width="20" height="26"/>
+                <circle class="m-dim" cx="252" cy="94" r="36"/>
+                <path class="m-accent" d="M226 78a36 36 0 0 1 52 16" fill="none"/>
+                <circle class="m-accent" cx="252" cy="94" r="4"/>
+                <line class="m-dim" x1="216" y1="140" x2="288" y2="140"/>
+              </svg>
+            </div>
+            <div class="card__body">
+              <h3 class="card__title">SecurePanel</h3>
+              <p class="card__text">A modern dashboard for monitoring security-related systems.</p>
+              <ul class="chips">
+                <li>React</li><li>TypeScript</li><li>API</li>
+              </ul>
+              <div class="card__actions">
+                <a class="linkbtn" href="https://eriss.github.io/securepanel/" target="_blank" rel="noopener noreferrer">Live <span aria-hidden="true">→</span></a>
+                <a class="linkbtn linkbtn--muted" href="https://github.com/eriss/securepanel" target="_blank" rel="noopener noreferrer">Code <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="card reveal">
+            <div class="card__media media--recon">
+              <span class="card__cat">Tooling</span>
+              <svg viewBox="0 0 320 180" aria-hidden="true" focusable="false">
+                <circle class="m-dim" cx="160" cy="90" r="62"/>
+                <circle class="m-dim" cx="160" cy="90" r="40"/>
+                <circle class="m-bar--accent" cx="160" cy="90" r="15" fill="none"/>
+                <line class="m-dim" x1="98" y1="90" x2="222" y2="90"/>
+                <line class="m-dim" x1="160" y1="28" x2="160" y2="152"/>
+                <path class="m-accent" d="M160 90 212 46" fill="none"/>
+                <circle class="m-accent" cx="212" cy="46" r="3"/>
+                <circle class="m-accent" cx="120" cy="122" r="3"/>
+                <rect class="m-window" x="238" y="120" width="58" height="36"/>
+                <rect class="m-bar" x="248" y="132" width="26" height="5"/>
+                <rect class="m-bar" x="248" y="143" width="38" height="5"/>
+              </svg>
+            </div>
+            <div class="card__body">
+              <h3 class="card__title">ReconX</h3>
+              <p class="card__text">A lightweight reconnaissance toolkit for authorized security testing.</p>
+              <ul class="chips">
+                <li>Python</li><li>Bash</li><li>OSINT</li>
+              </ul>
+              <div class="card__actions">
+                <a class="linkbtn" href="https://eriss.github.io/reconx/" target="_blank" rel="noopener noreferrer">Live <span aria-hidden="true">→</span></a>
+                <a class="linkbtn linkbtn--muted" href="https://github.com/eriss/reconx" target="_blank" rel="noopener noreferrer">Code <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="card reveal">
+            <div class="card__media media--os">
+              <span class="card__cat">Interface</span>
+              <svg viewBox="0 0 320 180" aria-hidden="true" focusable="false">
+                <rect class="m-window" x="30" y="30" width="118" height="76"/>
+                <rect class="m-window" x="158" y="30" width="132" height="40"/>
+                <rect class="m-window" x="158" y="80" width="132" height="70"/>
+                <rect class="m-window m-window--accent" x="30" y="116" width="118" height="34"/>
+                <rect class="m-bar" x="42" y="46" width="60" height="6"/>
+                <rect class="m-bar" x="42" y="62" width="38" height="6"/>
+                <rect class="m-bar--accent" x="170" y="46" width="52" height="6" fill="none"/>
+                <path class="m-dim" d="M204 130l18 22-7 1 5 11-6 3-5-11-6 5z"/>
+              </svg>
+            </div>
+            <div class="card__body">
+              <h3 class="card__title">Portfolio OS</h3>
+              <p class="card__text">A futuristic developer portfolio interface.</p>
+              <ul class="chips">
+                <li>React</li><li>CSS</li><li>JavaScript</li>
+              </ul>
+              <div class="card__actions">
+                <a class="linkbtn" href="https://eriss.github.io/" target="_blank" rel="noopener noreferrer">Live <span aria-hidden="true">→</span></a>
+                <a class="linkbtn linkbtn--muted" href="https://github.com/eriss/portfolio-os" target="_blank" rel="noopener noreferrer">Code <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= skills ================= -->
+    <section class="sec" id="skills" aria-labelledby="skills-title">
+      <div class="wrap">
+        <div class="sec__head reveal">
+          <h2 class="sec__title" id="skills-title">Skills</h2>
+          <span class="sec__line" aria-hidden="true"></span>
+          <span class="sec__note">// 05 domains</span>
+        </div>
+
+        <div class="skills">
+          <section class="skill reveal" aria-labelledby="sk-lang">
+            <h3 class="skill__head" id="sk-lang"><span class="skill__mark" aria-hidden="true"></span>Languages</h3>
+            <ul class="skill__list">
+              <li>Python</li><li>JavaScript</li><li>TypeScript</li><li>HTML</li><li>CSS</li>
+            </ul>
+          </section>
+
+          <section class="skill reveal" aria-labelledby="sk-sec">
+            <h3 class="skill__head" id="sk-sec"><span class="skill__mark" aria-hidden="true"></span>Cybersecurity</h3>
+            <ul class="skill__list">
+              <li>Linux</li><li>Networking</li><li>Web Security</li><li>OSINT</li><li>Ethical Hacking</li>
+            </ul>
+          </section>
+
+          <section class="skill reveal" aria-labelledby="sk-tools">
+            <h3 class="skill__head" id="sk-tools"><span class="skill__mark" aria-hidden="true"></span>Tools</h3>
+            <ul class="skill__list">
+              <li>Git</li><li>GitHub</li><li>VS Code</li><li>Docker</li><li>Burp Suite</li>
+            </ul>
+          </section>
+
+          <section class="skill reveal" aria-labelledby="sk-fw">
+            <h3 class="skill__head" id="sk-fw"><span class="skill__mark" aria-hidden="true"></span>Frameworks</h3>
+            <ul class="skill__list">
+              <li>React</li><li>Node.js</li><li>Express</li>
+            </ul>
+          </section>
+
+          <section class="skill reveal" aria-labelledby="sk-other">
+            <h3 class="skill__head" id="sk-other"><span class="skill__mark" aria-hidden="true"></span>Other</h3>
+            <ul class="skill__list">
+              <li>REST APIs</li><li>SQL</li><li>Bash</li><li>Git</li>
+            </ul>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= about ================= -->
+    <section class="sec" id="about" aria-labelledby="about-title">
+      <div class="wrap">
+        <div class="sec__head reveal">
+          <h2 class="sec__title" id="about-title">About me</h2>
+          <span class="sec__line" aria-hidden="true"></span>
+        </div>
+
+        <div class="about">
+          <div class="about__text reveal">
+            <p>I'm a developer with a strong interest in cybersecurity and technology. I enjoy building software, exploring how systems work, and learning how to make digital products more secure.</p>
+            <p class="about__muted">Most of what I know comes from breaking things in lab environments, reading source code, and shipping small projects until they behave.</p>
+            <a class="linkbtn" href="#journey">Read more <span aria-hidden="true">→</span></a>
+          </div>
+
+          <div class="about__figure reveal">
+            <span class="about__dots" aria-hidden="true"></span>
+            <svg viewBox="0 0 420 320" role="img" aria-label="Line illustration of a hooded figure beside a column of code">
+              <g class="line" fill="none" stroke-linejoin="round">
+                <path d="M150 300c6-70 26-108 54-126h44c28 18 48 56 54 126"/>
+                <path d="M204 174c-30 0-48-28-48-66 0-40 20-68 48-68s48 28 48 68c0 38-18 66-48 66z"/>
+                <path d="M186 112c0 26 8 46 18 62 10-16 18-36 18-62"/>
+              </g>
+              <g class="line line--accent" fill="none">
+                <path d="M170 104c0-34 14-58 34-58s34 24 34 58"/>
+                <rect x="192" y="206" width="24" height="19"/>
+                <path d="M198 206v-6a6 6 0 0 1 12 0v6"/>
+              </g>
+              <g class="code" aria-hidden="true">
+                <rect x="300" y="60" width="86" height="6"/>
+                <rect x="300" y="80" width="60" height="6"/>
+                <rect x="300" y="100" width="74" height="6"/>
+                <rect x="300" y="120" width="46" height="6"/>
+                <rect class="code--accent" x="300" y="140" width="66" height="6"/>
+                <rect x="300" y="160" width="52" height="6"/>
+              </g>
+              <circle class="node" cx="70" cy="70" r="3"/>
+              <circle class="node node--accent" cx="352" cy="250" r="3"/>
+              <circle class="node" cx="96" cy="256" r="3"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= journey ================= -->
+    <section class="sec" id="journey" aria-labelledby="journey-title">
+      <div class="wrap">
+        <div class="sec__head reveal">
+          <h2 class="sec__title" id="journey-title">Journey</h2>
+          <span class="sec__line" aria-hidden="true"></span>
+          <span class="sec__note">// 2024 — future</span>
+        </div>
+
+        <ol class="timeline">
+          <li class="tl reveal">
+            <span class="tl__year">2024</span>
+            <div class="tl__body">
+              <h3 class="tl__title">Started exploring programming</h3>
+              <p class="tl__text">First scripts, first bugs, first time a machine did exactly what I told it to.</p>
+            </div>
+          </li>
+          <li class="tl reveal">
+            <span class="tl__year">2025</span>
+            <div class="tl__body">
+              <h3 class="tl__title">Web development and Linux</h3>
+              <p class="tl__text">Built interfaces, moved to a Linux daily driver and got comfortable in a terminal.</p>
+            </div>
+          </li>
+          <li class="tl reveal">
+            <span class="tl__year">2026</span>
+            <div class="tl__body">
+              <h3 class="tl__title">Cybersecurity and software</h3>
+              <p class="tl__text">Focused more deeply on security fundamentals, networking and shipping complete products.</p>
+            </div>
+          </li>
+          <li class="tl reveal">
+            <span class="tl__year tl__year--next">Future</span>
+            <div class="tl__body">
+              <h3 class="tl__title">Building larger security-focused projects</h3>
+              <p class="tl__text">Next up: bigger systems, hardened by design rather than patched afterwards.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ================= contact ================= -->
+    <section class="sec" id="contact" aria-labelledby="contact-title">
+      <div class="wrap contact">
+        <div class="sec__head sec__head--center reveal">
+          <h2 class="sec__title" id="contact-title">Contact</h2>
+          <span class="sec__line" aria-hidden="true"></span>
+        </div>
+        <p class="contact__lede reveal">Have an idea or want to work together? Send a message and it lands straight in my inbox.</p>
+
+        <form class="form reveal" id="contact-form" novalidate>
+          <div class="form__row">
+            <div class="field">
+              <label class="field__label" for="cf-name">Name</label>
+              <input class="input" id="cf-name" name="name" type="text" autocomplete="name" maxlength="80" required aria-describedby="cf-name-error">
+              <p class="field__error" id="cf-name-error" hidden>Please enter your name (2 characters or more).</p>
+            </div>
+            <div class="field">
+              <label class="field__label" for="cf-email">Email</label>
+              <input class="input" id="cf-email" name="email" type="email" inputmode="email" autocomplete="email" maxlength="160" required aria-describedby="cf-email-error">
+              <p class="field__error" id="cf-email-error" hidden>Please enter a valid email address.</p>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="cf-subject">Subject <span class="field__opt">optional</span></label>
+            <input class="input" id="cf-subject" name="subject" type="text" maxlength="120">
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="cf-message">Message</label>
+            <textarea class="input input--area" id="cf-message" name="message" rows="6" maxlength="4000" required aria-describedby="cf-message-error"></textarea>
+            <p class="field__error" id="cf-message-error" hidden>Please write at least 10 characters.</p>
+          </div>
+
+          <!-- honeypot: hidden from people, attractive to bots -->
+          <div class="hp" aria-hidden="true">
+            <label for="cf-company">Company</label>
+            <input id="cf-company" name="company" type="text" tabindex="-1" autocomplete="off">
+          </div>
+
+          <div class="form__foot">
+            <button class="btn btn--primary" type="submit" id="cf-submit">
+              <span class="btn__label">Send Message</span> <span aria-hidden="true">→</span>
+            </button>
+            <p class="form__status" id="cf-status" role="status" aria-live="polite"></p>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__inner">
+      <div class="footer__meta">
+        <p class="footer__copy">© 2026 ERISS</p>
+        <p class="footer__note">Built with curiosity &amp; code.</p>
+      </div>
+      <div class="footer__socials">
+        <a class="iconbtn" href="https://github.com/eriss" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#i-github"/></svg></a>
+        <a class="iconbtn" href="https://t.me/eriss" target="_blank" rel="noopener noreferrer" aria-label="Telegram profile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#i-telegram"/></svg></a>
+        <a class="iconbtn" href="#contact" aria-label="Send an email through the contact form"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#i-mail"/></svg></a>
+        <a class="iconbtn" href="https://www.linkedin.com/in/eriss" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#i-linkedin"/></svg></a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/portfolio.js" defer></script>
 </body>
 </html>

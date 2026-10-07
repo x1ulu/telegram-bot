@@ -16,6 +16,9 @@ run_worker_first = ["/api/*", "/telegram/*", "/pay/*", "/internal/*", "/service-
 
 [vars]
 APP_VERSION = "3.4.0"
+# Sender for portfolio contact-form mail (Resend). Override with the secret
+# CONTACT_FROM_EMAIL once your own domain is verified with the provider.
+CONTACT_FROM_EMAIL = "Portfolio <onboarding@resend.dev>"
 
 
 [[durable_objects.bindings]]

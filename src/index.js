@@ -32,6 +32,7 @@ import settingsRoutes from './routes/settings.routes.js';
 import mediaRoutes from './media.js';
 import studioRoutes from './routes/studio.routes.js';
 import creatorRoutes from './routes/creator.routes.js';
+import contactRoutes from './routes/contact.routes.js';
 import { creatorHook, creatorRelay } from './creator.js';
 
 const api = new Hono().basePath('/api');
@@ -42,7 +43,7 @@ api.use('*', async (c, next) => {
   return bodyLimit({maxSize,onError:c=>c.json({ok:false,error:'request_too_large'},413)})(c,next);
 });
 api.use('*', async (c, next) => { c.header('cache-control', 'no-store'); c.header('x-content-type-options', 'nosniff'); await next(); });
-for (const [path, routes] of Object.entries({ auth: authRoutes, dashboard: dashboardRoutes, users: usersRoutes, broadcast: broadcastRoutes, engagement: engagementRoutes, support: supportRoutes, menu: menuRoutes, news: newsRoutes, rates: ratesRoutes, settings: settingsRoutes, media: mediaRoutes, studio: studioRoutes, creator: creatorRoutes, services: serviceRoutes, portal, bots: managedRoutes })) api.route('/' + path, routes);
+for (const [path, routes] of Object.entries({ auth: authRoutes, dashboard: dashboardRoutes, users: usersRoutes, broadcast: broadcastRoutes, engagement: engagementRoutes, support: supportRoutes, menu: menuRoutes, news: newsRoutes, rates: ratesRoutes, settings: settingsRoutes, media: mediaRoutes, studio: studioRoutes, creator: creatorRoutes, contact: contactRoutes, services: serviceRoutes, portal, bots: managedRoutes })) api.route('/' + path, routes);
 api.get('/health', c => c.json({ ok: true, data: { ts: Date.now(), version: c.env.APP_VERSION || '2.0.0', colo: c.req.raw.cf?.colo || null, durable: !!c.env.__coordinated } }));
 api.notFound(c => c.json({ ok: false, error: 'not_found' }, 404));
 api.onError((err, c) => {

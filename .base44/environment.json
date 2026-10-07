@@ -1,0 +1,17 @@
+{
+  "previewPort": 3000,
+  "healthPath": "/api/health",
+  "startCommand": "docker compose -f docker-compose.base44.yml up -d",
+  "secrets": [
+    {
+      "name": "RESEND_API_KEY",
+      "description": "Resend API key used to deliver portfolio contact-form mail (resend.com → API Keys)",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "CONTACT_TO_EMAIL",
+      "description": "Inbox that receives portfolio contact-form submissions",
+      "requiredAtBoot": false
+    }
+  ]
+}

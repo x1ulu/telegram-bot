@@ -1,0 +1,43 @@
+# Base44 sandbox runbook — development only.
+#
+# This repository is a single Cloudflare Worker (Hono routes + Durable Objects on
+# SQLite + static assets). It is run here with `wrangler dev` in local mode from
+# the bind-mounted checkout, so edits are picked up without rebuilding an image.
+# See AGENTS.md for the reasoning behind each sandbox-specific choice.
+
+services:
+  app:
+    image: node:22-bookworm
+    working_dir: /app
+    environment:
+      - BASE44_PREVIEW_MODE
+      - CI=true
+      - WRANGLER_SEND_METRICS=false
+    # Installs from the lockfile, rebuilds assets, then serves the Worker on 3000.
+    command: ["sh", "/app/scripts/base44-dev.sh"]
+    ports:
+      - "3000:3000"
+    env_file:
+      - /run/base44/app.env
+    volumes:
+      - ./:/app
+      # Dependencies and wrangler's local Durable Object state must never land in
+      # the checkout: the platform commits that directory at the end of every turn.
+      - base44_node_modules:/app/node_modules
+      - base44_wrangler_state:/app/.wrangler
+      # Worker secrets. `wrangler dev` only binds values from its config vars or a
+      # .dev.vars file — never the container's process environment — so the
+      # platform-managed env file is mounted at that expected path. The file stays
+      # outside the repository and wrangler prints such bindings as "(hidden)".
+      - /run/base44/app.env:/app/.dev.vars:ro
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 240s
+
+volumes:
+  base44_node_modules:
+  base44_wrangler_state:

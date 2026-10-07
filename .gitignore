@@ -1,0 +1,4 @@
+# Keep local tooling state and secrets out of the repository.
+node_modules/
+.wrangler/
+.dev.vars
