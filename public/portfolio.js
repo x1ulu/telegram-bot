@@ -1,8 +1,8 @@
 /* Eriss — portfolio interactions.
  *
  * Vanilla, dependency-free and progressive: the page is fully readable without
- * this file, it only adds the mobile menu, smooth scrolling, entrance reveals,
- * the pointer glow and the contact form's validation + submit states. */
+ * this file, it only adds the mobile menu, smooth scrolling, entrance reveals
+ * and the contact form's validation + submit states. */
 
 (() => {
   'use strict';
@@ -83,28 +83,6 @@
       });
     }, { rootMargin: '-45% 0px -50% 0px' });
     sections.forEach((section) => spy.observe(section));
-  }
-
-  /* -------------------------------------------------------- pointer glow --- */
-  const glow = $('#glow');
-  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-  if (glow && finePointer && !reduceMotion) {
-    let raf = 0;
-    let x = 0;
-    let y = 0;
-    const draw = () => {
-      raf = 0;
-      glow.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-    };
-    window.addEventListener('pointermove', (event) => {
-      x = event.clientX;
-      y = event.clientY;
-      glow.classList.add('is-on');
-      if (!raf) raf = requestAnimationFrame(draw);
-      const hot = event.target.closest('a, button, input, textarea');
-      glow.classList.toggle('is-hot', !!hot);
-    }, { passive: true });
-    window.addEventListener('pointerleave', () => glow.classList.remove('is-on', 'is-hot'));
   }
 
   /* -------------------------------------------------------------- contact -- */
